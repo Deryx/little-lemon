@@ -1,162 +1,68 @@
-// Bookings.test.jsx
+// App.test.jsx
 import React from 'react';
-import { render, screen, fireEvent } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
 import '@testing-library/jest-dom';
-import Bookings from './components/Bookings';
-import { fetchAPI } from './api';
+import App from './App';
 
 // ─── Mocks ────────────────────────────────────────────────────────────────────
 
-// Mock the fetchAPI named export used by initializeTimes on mount
-jest.mock('./api', () => ({
-    fetchAPI: jest.fn(),
-}));
+jest.mock('./components/Header', () => () => <header data-testid="header" />);
+jest.mock('./components/Main',   () => () => <main   data-testid="main"   />);
+jest.mock('./components/Footer', () => () => <footer data-testid="footer" />);
 
-// Mock BookingForm so Bookings tests stay isolated from its internals
-jest.mock('./components/BookingForm', () => ({ availableTimes, onDateChange }) => (
-    <div data-testid="booking-form">
-        <ul>
-            {availableTimes?.map((t) => (
-                <li key={t} data-testid="time-option">{t}</li>
-            ))}
-        </ul>
-        <button onClick={() => onDateChange('2024-06-15')}>
-            Change Date
-        </button>
-    </div>
-));
+// ─── Rendering ────────────────────────────────────────────────────────────────
 
+describe('App', () => {
+    beforeEach(() => render(<App />));
 
-// ─── Helpers ──────────────────────────────────────────────────────────────────
-
-const DEFAULT_TIMES  = ['17:00', '18:00', '19:00', '20:00', '21:00', '22:00'];
-const UPDATED_TIMES  = ['12:00', '13:00', '14:00'];
-
-const setupMocks = ({
-    moduleReturn = DEFAULT_TIMES,
-    windowReturn = UPDATED_TIMES,
-} = {}) => {
-    fetchAPI.mockReturnValue(moduleReturn);          // used by initializeTimes
-    window.fetchAPI = jest.fn().mockReturnValue(windowReturn); // used by handleDateChange
-};
-
-// ─── initializeTimes (via mount) ──────────────────────────────────────────────
-
-describe('initializeTimes', () => {
-    it('calls fetchAPI with today\'s date on mount', () => {
-        setupMocks();
-
-        const before = new Date();
-        render(<Bookings />);
-        const after = new Date();
-
-        expect(fetchAPI).toHaveBeenCalledTimes(1);
-
-        const calledWith = fetchAPI.mock.calls[0][0];
-        expect(calledWith).toBeInstanceOf(Date);
-        expect(calledWith.getTime()).toBeGreaterThanOrEqual(before.getTime());
-        expect(calledWith.getTime()).toBeLessThanOrEqual(after.getTime());
+    it('renders the Header component', () => {
+        expect(screen.getByTestId('header')).toBeInTheDocument();
     });
 
-    it('passes the return value of fetchAPI as the initial availableTimes', () => {
-        setupMocks({ moduleReturn: DEFAULT_TIMES });
-        render(<Bookings />);
-
-        const items = screen.getAllByTestId('time-option');
-        expect(items).toHaveLength(DEFAULT_TIMES.length);
-        items.forEach((item, i) => expect(item).toHaveTextContent(DEFAULT_TIMES[i]));
+    it('renders the Main component', () => {
+        expect(screen.getByTestId('main')).toBeInTheDocument();
     });
 
-    it('handles fetchAPI returning an empty array without crashing', () => {
-        setupMocks({ moduleReturn: [] });
-        render(<Bookings />);
+    it('renders the Footer component', () => {
+        expect(screen.getByTestId('footer')).toBeInTheDocument();
+    });
 
-        expect(screen.queryAllByTestId('time-option')).toHaveLength(0);
+    it('renders all three components exactly once', () => {
+        expect(screen.getAllByTestId(/header|main|footer/)).toHaveLength(3);
     });
 });
 
-// ─── Bookings rendering ───────────────────────────────────────────────────────
+// ─── Document structure ───────────────────────────────────────────────────────
 
-describe('Bookings rendering', () => {
-    beforeEach(() => setupMocks());
+describe('App — document structure', () => {
+    it('renders Header before Main', () => {
+        const { container } = render(<App />);
+        const [header, main] = [
+            container.querySelector('[data-testid="header"]'),
+            container.querySelector('[data-testid="main"]'),
+        ];
 
-    it('renders a <main> element', () => {
-        const { container } = render(<Bookings />);
-        expect(container.querySelector('main')).toBeInTheDocument();
+        expect(
+            header.compareDocumentPosition(main) & Node.DOCUMENT_POSITION_FOLLOWING
+        ).toBeTruthy();
     });
 
-    it('renders the BookingForm component', () => {
-        render(<Bookings />);
-        expect(screen.getByTestId('booking-form')).toBeInTheDocument();
+    it('renders Main before Footer', () => {
+        const { container } = render(<App />);
+        const [main, footer] = [
+            container.querySelector('[data-testid="main"]'),
+            container.querySelector('[data-testid="footer"]'),
+        ];
+
+        expect(
+            main.compareDocumentPosition(footer) & Node.DOCUMENT_POSITION_FOLLOWING
+        ).toBeTruthy();
     });
 
-    it('passes availableTimes to BookingForm', () => {
-        setupMocks({ moduleReturn: DEFAULT_TIMES });
-        render(<Bookings />);
-
-        expect(screen.getAllByTestId('time-option')).toHaveLength(DEFAULT_TIMES.length);
-    });
-
-    it('passes an onDateChange handler to BookingForm', () => {
-        render(<Bookings />);
-
-        // The mock BookingForm renders a button that calls onDateChange —
-        // if it were undefined this would throw.
-        expect(() => fireEvent.click(screen.getByRole('button'))).not.toThrow();
-    });
-});
-
-// ─── handleDateChange ─────────────────────────────────────────────────────────
-
-describe('handleDateChange', () => {
-    beforeEach(() => setupMocks());
-
-    it('calls window.fetchAPI when the date changes', () => {
-        render(<Bookings />);
-        fireEvent.click(screen.getByRole('button', { name: /change date/i }));
-
-        expect(window.fetchAPI).toHaveBeenCalledTimes(1);
-    });
-
-    it('calls window.fetchAPI with a Date object', () => {
-        render(<Bookings />);
-        fireEvent.click(screen.getByRole('button', { name: /change date/i }));
-
-        const calledWith = window.fetchAPI.mock.calls[0][0];
-        expect(calledWith).toBeInstanceOf(Date);
-    });
-
-    it('calls window.fetchAPI with the correct date value', () => {
-        render(<Bookings />);
-        fireEvent.click(screen.getByRole('button', { name: /change date/i }));
-
-        const calledWith = window.fetchAPI.mock.calls[0][0];
-        // Mock BookingForm fires onDateChange('2024-06-15')
-        expect(calledWith.toISOString().startsWith('2024-06-15')).toBe(true);
-    });
-
-    it('updates availableTimes in BookingForm after a date change', () => {
-        setupMocks({ moduleReturn: DEFAULT_TIMES, windowReturn: UPDATED_TIMES });
-        render(<Bookings />);
-
-        // Before change
-        expect(screen.getAllByTestId('time-option')).toHaveLength(DEFAULT_TIMES.length);
-
-        fireEvent.click(screen.getByRole('button', { name: /change date/i }));
-
-        // After change
-        const items = screen.getAllByTestId('time-option');
-        expect(items).toHaveLength(UPDATED_TIMES.length);
-        items.forEach((item, i) => expect(item).toHaveTextContent(UPDATED_TIMES[i]));
-    });
-
-    it('keeps the previous times when window.fetchAPI returns null', () => {
-        setupMocks({ moduleReturn: DEFAULT_TIMES, windowReturn: null });
-        render(<Bookings />);
-
-        fireEvent.click(screen.getByRole('button', { name: /change date/i }));
-
-        // payload is null → ?? falls back to current state
-        expect(screen.getAllByTestId('time-option')).toHaveLength(DEFAULT_TIMES.length);
+    it('renders without a wrapping DOM element (fragment)', () => {
+        const { container } = render(<App />);
+        // A fragment renders its children directly into the container <div>.
+        // If a wrapper element were added, childElementCount would be 1.
+        expect(container.childElementCount).toBe(3);
     });
 });

@@ -152,6 +152,7 @@ const BookingForm = ({ availableTimes, onSubmit }) => {
             <div>
                 <button
                     type="submit"
+                    aria-label='On Click'
                     onClick={handleSubmit}
                 >
                     Make Your reservation
