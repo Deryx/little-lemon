@@ -1,10 +1,10 @@
 import React from 'react';
-import Nav from './components/Nav';
+import Nav from './Nav';
 
 const Header = () => {
     return (
         <header>
-            <img src="assets" alt="Little Lemon Logo" />
+            <img src="little-lemon-logo.jpg" width="200" alt="Little Lemon Logo" />
             <Nav />
         </header>
     );

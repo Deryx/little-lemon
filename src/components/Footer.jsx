@@ -1,31 +1,38 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 
 const Footer = () => {
     return (
         <footer>
-            <h3>Doormat Navigation</h3>
-            <ul>
-                <li>
-                    <a href="#">Home</a>
-                </li>
-                <li>
-                    <a href="#">About</a>
-                </li>
-                <li>
-                    <a href="#">Menu</a>
-                </li>
-                <li>
-                    <a href="#">Reservations</a>
-                </li>
-                <li>
-                    <a href="#">Order Online</a>
-                </li>
-                <li>
-                    <a href="#">Login</a>
-                </li>
-            </ul>
-            <h3>Contact</h3>
+            <section>
+                <h3>Doormat<br />Navigation</h3>
+                <ul>
+                    <li>
+                        <Link to="/">Home</Link>
+                    </li>
+                    <li>
+                        <Link to="/about">About</Link>
+                    </li>
+                    <li>
+                        <Link to="/menu">Menu</Link>
+                    </li>
+                    <li>
+                        <Link to="/reservations">Reservations</Link>
+                    </li>
+                    <li>
+                        <Link to="/order">Order Online</Link>
+                    </li>
+                    <li>
+                        <Link to="/login">Login</Link>
+                    </li>
+                </ul>
+            </section>
+            <section>
+                <h3>Contact</h3>
+            </section>
+            <section>
             <h3>Social Media Links</h3>
+            </section>
         </footer>
     );
 }
