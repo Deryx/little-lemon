@@ -3,11 +3,64 @@
   display: flex;
   flex-direction: column;
 
+  .hero {
+    width: 100%;
+    padding: 20px;
+    display: flex;
+    justify-content: center;
+    background-color: #495e57;
+
+    .hero-text {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      width: 300px;
+      margin-right: 150px;
+
+      h1 {
+        font-family: "Markazi Text", serif;
+        font-size: 4rem;
+        color: #ffffff;
+        text-align: left;
+        margin-bottom: 0;
+      }
+
+      h3 {
+        font-family: "Markazi Text", serif;
+        font-size: 2rem;
+        color: #ffffff;
+        align-self: flex-start;
+        margin-top: 0;
+        padding-left: 10px;
+      }
+
+      p {
+        color: #fff;
+        padding-left: 10px;
+        margin: 0;
+      }
+
+      button {
+        background-color: #f4ce14;
+        color: #495e57;
+        padding: 10px 20px;
+        font-family: "Karla", sans-serif;
+        font-size: 1.25rem;
+        font-weight: bold;
+        border-radius: 8px;
+        cursor: pointer;
+        margin-top: 40px;
+        border: none;
+      }
+    }
+  }
+
   header {
     width: 100%;
     display: flex;
     justify-content: center;
     align-items: center;
+    margin: 20px 0;
 
     nav {
       display: flex;
@@ -26,6 +79,11 @@
             color: rgb(0, 0, 0);
             text-decoration: none;
           }
+
+          a:hover {
+            text-decoration: underline;
+            font-weight: bold;
+          }
         }
       }
     }
@@ -39,17 +97,29 @@
     align-items: center;
 
     form {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
       width: 40%;
+      height: 600px;
       margin-top: 20px;
+
+      h1 {
+        align-self: flex-start;
+        margin-bottom: 40px;
+      }
 
       div {
         width: 100%;
         display: flex;
         margin-bottom: 10px;
         font-family: "Karla", sans-serif;
+        align-items: center;
 
         label {
           width: 20%;
+          font-weight: bold;
         }
 
         input {
@@ -75,6 +145,7 @@
           padding: 10px 20px;
           border-radius: 8px;
           cursor: pointer;
+          margin: 20px 0;
         }
 
         button:hover {
@@ -101,6 +172,11 @@
     width: 100%;
     display: flex;
     justify-content: center;
+    background-color: #495e57;
+    color: #fff;
+    padding-bottom: 20px;
+    position: static;
+    bottom: 0;
 
     section {
       width: calc(40% / 3);
@@ -127,13 +203,132 @@
 
           a {
             display: block;
-            color: rgb(0, 0, 0);
+            color: #fff;
             text-decoration: none;
             width: 100%;
+          }
+
+          a:hover {
+            text-decoration: underline;
+            font-weight: bold;
           }
         }
       }
     }
+  }
 
+  .specials {
+    width: 100%;
+    margin-top: 20px;
+    margin-bottom: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    
+      .specials-header {
+          width: 41%;
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          margin-bottom: 20px;
+      
+          h2 {
+            align-self: flex-start;
+          }
+
+          button {
+            background-color: #495e57;
+            color: #f4ce14;
+            padding: 10px 20px;
+            font-family: "Karla", sans-serif;
+            font-size: 1.25rem;
+            font-weight: bold;
+            border-radius: 8px;
+            cursor: pointer;
+            border: none;
+          }
+        }
+
+    .cards {
+      width: 75%;
+      display: flex;
+      justify-content: center;
+
+      .card {
+        width: 250px;
+        height: 350px;
+        display: flex;
+        flex-direction: column;
+        margin: 0 10px;
+        border: 1px solid #495e57;
+        padding-bottom: 10px;
+        background-color: #f4ce14;
+
+        img {
+          height: 167px;
+        }
+
+        .card-header {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          margin: 0 10px;
+
+          h3 {
+            align-self: flex-start;
+            font-family: 'Markazi Text', serif;
+          }
+
+          .price {
+            font-family: 'Markazi Text', serif;
+            font-size: 1.2rem;
+          }
+        }
+
+        .description {
+          font-family: 'Karla', sans-serif;
+          font-size: 0.9rem;
+          height: 100px;
+           margin: 0 10px;
+       }
+
+        .order {
+          position: static;
+          bottom: 0;
+          font-size: 0.9rem;
+          margin: 0 10px;
+
+          a {
+            color: #000;
+            font-weight: bold;
+            text-decoration: none;
+          }
+
+          a:hover {
+            text-decoration: underline;
+          }
+        }
+      }
+    }
+  }
+
+  .testimmonials {
+    width: 100%;
+    margin-top: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    .testimmonials-header {
+      width: 41%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+      
+      h2 {
+        align-self: flex-start;
+      }
+    }
   }
 }

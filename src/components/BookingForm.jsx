@@ -50,6 +50,7 @@ const BookingForm = ({ availableTimes, onSubmit }) => {
 
     return (
         <form>
+            <h1>Reservations</h1>
             <div>
                 <label htmlFor='firstName'>First Name:</label>
                 <input
