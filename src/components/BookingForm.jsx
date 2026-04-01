@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { submitAPI } from '../api';
+import ConfirmedBooking from './ConfirmedBooking';
 
 const BookingForm = ({ availableTimes, onSubmit }) => {
     const [formData, setFormData] = useState({
@@ -14,152 +15,156 @@ const BookingForm = ({ availableTimes, onSubmit }) => {
     });
 
     const [errors, setErrors] = useState({});
+    const [showConfirmation, setShowConfirmation] = useState(false);
 
     const validateForm = () => {
-        if (formData.firstName === '') {
-            setErrors(prev => ({ ...prev, firstName: 'First name is required' }));
-        }
-        if (formData.lastName === '') {
-            setErrors(prev => ({ ...prev, lastName: 'Last name is required' }));
-        }
+        const newErrors = {};
+
+        if (formData.firstName === '') newErrors.firstName = 'First name is required';
+        if (formData.lastName === '') newErrors.lastName = 'Last name is required';
         if (formData.email === '') {
-            setErrors(prev => ({ ...prev, email: 'First name is required' }));
+            newErrors.email = 'Email is required';
+        } else if (!formData.email.includes('@')) {
+            newErrors.email = 'Please enter a valid email';
         }
-        if (!formData.email.includes('@')) {
-            setErrors(prev => ({ ...prev, email: 'Please enter a valid email' }));
-        }
-        if (formData.phone === '') {
-            setErrors(prev => ({ ...prev, phone: 'A phone number is required' }));
-        }
-        if (formData.date === '') {
-            setErrors(prev => ({ ...prev, date: 'A date is required' }));
-        }
-        if (formData.time === '') {
-            setErrors(prev => ({ ...prev, time: 'A time is required' }));
-        }
-    }
+        if (formData.phone === '') newErrors.phone = 'A phone number is required';
+        if (formData.date === '') newErrors.date = 'A date is required';
+        if (formData.time === '') newErrors.time = 'A time is required';
+
+        setErrors(newErrors);
+        return newErrors;
+    };
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        // Handle form submission here
-        validateForm();
-        if (Object.keys(errors).length === 0) {
+        const newErrors = validateForm();
+        if (Object.keys(newErrors).length === 0) {
             submitAPI(formData);
+            setShowConfirmation(true);
         }
     };
 
     return (
-        <form>
-            <h1>Reservations</h1>
-            <div>
-                <label htmlFor='firstName'>First Name:</label>
-                <input
-                    type="text"
-                    name="firstName"
-                    id="firstName"
-                    value={formData.firstName}
-                    onChange={(e) => setFormData({ ...formData, firstName: e.target.value })}
-                />
-            </div>
-            {errors.firstName && <div className='error'><label></label>{errors.firstName}</div>}
+        <>
+            {showConfirmation && <ConfirmedBooking formData={formData} />}
+            {!showConfirmation &&
+                <form onSubmit={handleSubmit}>
+                    <h1>Reservations</h1>
 
-            <div>
-                <label htmlFor='lastName'>Last Name:</label>
-                <input
-                    type="text"
-                    name="lastName"
-                    id="lastName"
-                    value={formData.lastName}
-                        onChange={(e) => setFormData({ ...formData, lastName: e.target.value })}
-                />
-            </div>
-            {errors.lastName && <div className='error'><label></label>{errors.lastName}</div>}
-            
-            <div>
-                <label htmlFor='phone'>Phone:</label>
-                <input
-                    type="tel"
-                    name="phone"
-                    id="phone"
-                    value={formData.phone}
-                    onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                />
-            </div>
-            {errors.phone && <div className='error'><label></label>{errors.phone}</div>}
-            
-            <div>
-                <label htmlFor='email'>Email:</label>
-                <input
-                    type="email"
-                    name="email"
-                    id="email"
-                    value={formData.email}
-                    onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                />
-            </div>
-            {errors.email && <div className='error'><label></label>{errors.email}</div>}
-            
-            <div>
-                <label htmlFor='date'>Date:</label>
-                <input
-                    type="res-date"
-                    name="res-date"
-                    id="date"
-                    value={formData.date}
-                    onChange={(e) => setFormData({ ...formData, date: e.target.value })}
-                />
-            </div>
-            {errors.date && <div className='error'><label></label>{errors.date}</div>}
-            
-            <div>
-                <label htmlFor='time'>Time:</label>
-                <select
-                    id="res-time"
-                    name="res-time"
-                    value={formData.time}
-                    onChange={(e) => setFormData({ ...formData, time: e.target.value })}
-                >
-                    {availableTimes.map((time) => (
-                        <option key={time} value={time}>
-                            {time}
-                        </option>
-                    ))}
-                </select>
-            </div>
-            {errors.time && <div className='error'><label></label>{errors.time}</div>}
-            
-            <div>
-                <label htmlFor='guests'>Guests:</label>
-                <input
-                    type="number"
-                    name="guests"
-                    min="1"
-                    max="10"
-                    value={formData.guests}
-                    onChange={(e) => setFormData({ ...formData, guests: parseInt(e.target.value) || 1 })}
-                />
-            </div>
-            {errors.guests && <div><label></label>{errors.guests}</div>}
-            
-            <div>
-                <label htmlFor='occasion'>Occasion:</label>
-                <select id="occasion">
-                    <option>Birthday</option>
-                    <option>Engagement</option>
-                    <option>Anniversary</option>
-                    <option>Other</option>
-                </select>
-            </div>
-            <div>
-                <button
-                    type="submit"
-                    aria-label='On Click'
-                    onClick={handleSubmit}
-                >
-                    Make Your reservation
-                </button>
-            </div>
-        </form>
+                    <div>
+                        <label htmlFor='firstName'>First Name:</label>
+                        <input
+                            type="text"
+                            id="firstName"
+                            name="firstName"
+                            value={formData.firstName}
+                            onChange={(e) => setFormData({ ...formData, firstName: e.target.value })}
+                        />
+                    </div>
+                    {errors.firstName && <div className='error'><label></label>{errors.firstName}</div>}
+
+                    <div>
+                        <label htmlFor='lastName'>Last Name:</label>
+                        <input
+                            type="text"
+                            id="lastName"
+                            name="lastName"
+                            value={formData.lastName}
+                            onChange={(e) => setFormData({ ...formData, lastName: e.target.value })}
+                        />
+                    </div>
+                    {errors.lastName && <div className='error'><label></label>{errors.lastName}</div>}
+
+                    <div>
+                        <label htmlFor='phone'>Phone:</label>
+                        <input
+                            type="tel"
+                            id="phone"
+                            name="phone"
+                            value={formData.phone}
+                            onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                        />
+                    </div>
+                    {errors.phone && <div className='error'><label></label>{errors.phone}</div>}
+
+                    <div>
+                        <label htmlFor='email'>Email:</label>
+                        <input
+                            type="email"
+                            id="email"
+                            name="email"
+                            value={formData.email}
+                            onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                        />
+                    </div>
+                    {errors.email && <div className='error'><label></label>{errors.email}</div>}
+
+                    <div>
+                        <label htmlFor='date'>Date:</label>
+                        <input
+                            type="date"
+                            id="date"
+                            name="date"
+                            value={formData.date}
+                            onChange={(e) => setFormData({ ...formData, date: e.target.value })}
+                        />
+                    </div>
+                    {errors.date && <div className='error'><label></label>{errors.date}</div>}
+
+                    <div>
+                        <label htmlFor='time'>Time:</label>
+                        <select
+                            id="time"
+                            name="time"
+                            value={formData.time}
+                            onChange={(e) => setFormData({ ...formData, time: e.target.value })}
+                        >
+                            <option value=''>-- Select a time --</option>
+                            {availableTimes.map((time) => (
+                                <option key={time} value={time}>{time}</option>
+                            ))}
+                        </select>
+                    </div>
+                    {errors.time && <div className='error'><label></label>{errors.time}</div>}
+
+                    <div>
+                        <label htmlFor='guests'>Guests:</label>
+                        <input
+                            type="number"
+                            id="guests"
+                            name="guests"
+                            min="1"
+                            max="10"
+                            value={formData.guests}
+                            onChange={(e) => setFormData({ ...formData, guests: parseInt(e.target.value) || 1 })}
+                        />
+                    </div>
+                    {errors.guests && <div className='error'><label></label>{errors.guests}</div>}
+
+                    <div>
+                        <label htmlFor='occasion'>Occasion:</label>
+                        <select
+                            id="occasion"
+                            name="occasion"
+                            value={formData.occasion}
+                            onChange={(e) => setFormData({ ...formData, occasion: e.target.value })}
+                        >
+                            <option value=''>-- Select an occasion --</option>
+                            <option value='Birthday'>Birthday</option>
+                            <option value='Engagement'>Engagement</option>
+                            <option value='Anniversary'>Anniversary</option>
+                            <option value='Other'>Other</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <button type="submit" aria-label='Submit reservation'>
+                            Make Your Reservation
+                        </button>
+                    </div>
+                </form>
+            }
+        </>
     );
 };
 
